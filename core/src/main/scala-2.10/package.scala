@@ -28,13 +28,6 @@ package object dispatch {
 
   implicit def future2Enriched[T](f: Future[T]) = new EnrichedFuture[T](f)
 
-  implicit def left2Future[A,B](f: PromiseEither.LeftProjection[A,B]): PromiseEither.EitherDelegate[A,B] =
-    new PromiseEither.EitherDelegate[A,B](f.underlying)
-
-  implicit def right2Future[A,B](f: PromiseEither.RightProjection[A,B]): PromiseEither.EitherDelegate[A,B] =
-    new PromiseEither.EitherDelegate[A,B](f.underlying)
-
-
   implicit val durationOrdering = Ordering.by[Duration,Long] {
     _.millis
   }

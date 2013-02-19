@@ -72,26 +72,28 @@ class EnrichedFuture[A](fut: Future[A]) {
   def right[B,C](implicit ev: Future[A] <:< Future[Either[B, C]]) =
     new PromiseEither.RightProjection(fut)
 
-  def either: Future[Either[Throwable, A]] = fut map { Right(_) } recover { case x => Left(x) }
+  def either: Future[Either[Throwable, A]] =
+    fut.map { Right(_) }.recover { case exc => Left(exc) }
 
   def apply() = Await.result(fut, scala.concurrent.duration.Duration.Inf)
 
-  def option: Future[Option[A]] = fut.map(a => Some(a)).recover { case a: Throwable => None }
-
+  def option: Future[Option[A]] =
+    fut.map(a => Some(a)).recover { case _: Throwable => None }
 }
 
 /** This is a future which delegates to another future **/
 case class DelegateFuture[A](fut: Future[A]) extends Future[A] {
 
-  @throws(classOf[Exception])
-  def result(atMost: scala.concurrent.duration.Duration)(implicit permit: CanAwait): A = fut.result(atMost)(permit)
+  def result(atMost: scala.concurrent.duration.Duration)
+            (implicit permit: CanAwait): A =
+    fut.result(atMost)(permit)
 
-  @throws(classOf[TimeoutException])
-  @throws(classOf[InterruptedException])
-  def ready(atMost: scala.concurrent.duration.Duration)(implicit permit: CanAwait): this.type
-   = fut.ready(atMost)(permit).asInstanceOf[this.type]
+  def ready(atMost: scala.concurrent.duration.Duration)
+           (implicit permit: CanAwait): this.type =
+    fut.ready(atMost)(permit).asInstanceOf[this.type]
 
-  def onComplete[U](func: Try[A] => U)(implicit executor: ExecutionContext): Unit =
+  def onComplete[U](func: Try[A] => U)
+                   (implicit executor: ExecutionContext): Unit =
     fut.onComplete(func)(executor)
 
   def isCompleted: Boolean = fut.isCompleted
@@ -105,6 +107,7 @@ case class Duration(length: Long, unit: java.util.concurrent.TimeUnit) {
 
 object Duration {
   val None = Duration(-1L, java.util.concurrent.TimeUnit.MILLISECONDS)
-  def millis(length: Long) = Duration(length, java.util.concurrent.TimeUnit.MILLISECONDS)
+  def millis(length: Long) =
+    Duration(length, java.util.concurrent.TimeUnit.MILLISECONDS)
 }
 
