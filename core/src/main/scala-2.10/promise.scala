@@ -76,8 +76,6 @@ class EnrichedFuture[A](fut: Future[A]) {
 
   def apply() = Await.result(fut, scala.concurrent.duration.Duration.Inf)
 
-  def foreach[U](f: (A) ⇒ U) = fut.foreach(f)
-
   def option: Future[Option[A]] = fut.map(a => Some(a)).recover { case a: Throwable => None }
 
 }
