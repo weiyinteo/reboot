@@ -58,7 +58,7 @@ object Futures {
 
 
 /** This has classes which dispatch's old promise has */
-case class PimpedFuture[A](fut: Future[A]) {
+class EnrichedFuture[A](fut: Future[A]) {
 
   /*
   def flatten[B](implicit pv: Future[A] <:< Future[Future[B]]):Future[B] =
@@ -99,16 +99,7 @@ case class DelegateFuture[A](fut: Future[A]) extends Future[A] {
   def isCompleted: Boolean = fut.isCompleted
 
   def value: Option[Try[A]] = fut.value
-
 }
-/*
-/** This is a wrapper which turns a listenableFuture into a future */
-class ListenableFutureFuture[A](underlyingIn: => ListenableFuture[A],
-                                val http: HttpExecutor)
-  extends DelegateFuture[A](listenableToFuture(underlyingIn)) {
-}
-*/
-
 
 case class Duration(length: Long, unit: java.util.concurrent.TimeUnit) {
   def millis = unit.toMillis(length)

@@ -26,7 +26,7 @@ package object dispatch {
     def run() { f() }
   }
 
-  implicit def future2Pimped[T](f: Future[T]): PimpedFuture[T] = PimpedFuture[T](f)
+  implicit def future2Enriched[T](f: Future[T]) = new EnrichedFuture[T](f)
 
   implicit def left2Future[A,B](f: PromiseEither.LeftProjection[A,B]): PromiseEither.EitherDelegate[A,B] =
     new PromiseEither.EitherDelegate[A,B](f.underlying)

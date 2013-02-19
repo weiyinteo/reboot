@@ -2,7 +2,7 @@ import com.ning.http.client.{AsyncHttpClient, AsyncHandler, Request,
 ListenableFuture}
 
 /** This will hold all the explicits **/
-package object dispatch{
+package object dispatch {
 
   /** Type alias for RequestBuilder, our typical request definitions */
   type Req = com.ning.http.client.RequestBuilder
@@ -28,7 +28,6 @@ package object dispatch{
     _.millis
   }
 
-  /** This method turns a request into a Future **/
   def toScalaFuture[T](
     listenableFuture: ListenableFuture[T],
     http: HttpExecutor

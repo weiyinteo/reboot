@@ -183,13 +183,6 @@ trait DelegateFuture[+D] {
   val http = delegate.http
 }
 
-case class PimpedFuture[T](fut: Future[T]) extends DelegateFuture[T] {
-  def delegate = fut
-
-  def foreach[U](f: (T) ⇒ U) = fut.foreach(f)
-
-}
-
 trait PromiseSIP[+A] { self: Future[A] =>
 
   def onComplete[U](f: Either[Throwable, A] => U) = {
