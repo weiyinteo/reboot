@@ -1,3 +1,4 @@
+import java.util.{concurrent => juc}
 import com.ning.http.client.{ListenableFuture, AsyncHttpClient, AsyncHandler, Request}
 import scala.concurrent.Promise
 import scala.util.{Failure, Success}
@@ -12,9 +13,6 @@ package object dispatch {
 
   /** type alias for dispatch future/ scala future **/
   type Future[+A] = scala.concurrent.Future[A]
-
-  @deprecated("Use dispatch.HttpExecutor")
-  type Executor = HttpExecutor
 
   implicit val exec = scala.concurrent.ExecutionContext.Implicits.global
 
@@ -37,29 +35,25 @@ package object dispatch {
     new PromiseEither.EitherDelegate[A,B](f.underlying)
 
 
-  /*
   implicit val durationOrdering = Ordering.by[Duration,Long] {
     _.millis
   }
-  */
 
-  def requestHandlerToFuture[T](request: Request, handler: AsyncHandler[T], http: HttpExecutor): Future[T] =
-      bridge[T](http.client.executeRequest(request, handler))(http.promiseExecutor)
-
-  def bridge[T](listenableFuture: ListenableFuture[T])(implicit ex: java.util.concurrent.Executor): Future[T] = {
-    println("\n\nStarting request\n\n")
+  def toScalaFuture[T](
+    listenableFuture: ListenableFuture[T],
+    httpExecutor: HttpExecutor
+  ): Future[T] = {
+    val timeout = httpExecutor.timeout
     val promise = scala.concurrent.Promise[T]()
+
     listenableFuture.addListener(new Runnable {
       def run: Unit = promise.complete(
-        try Success(listenableFuture.get(10, java.util.concurrent.TimeUnit.SECONDS))
+        try Success(listenableFuture.get(timeout.length, timeout.unit))
         catch {
-          case e => Failure(e)
+          case e: Exception => Failure(e)
         }
       )
-    }, ex)
+    }, httpExecutor.promiseExecutor)
     promise.future
   }
-
-
-
 }

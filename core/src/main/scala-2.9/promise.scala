@@ -36,17 +36,6 @@ object Futures {
           factory.http.promiseExecutor.execute(f)
       }
   }
-
-  @deprecated("Use Http.promise.all or other HttpExecutor")
-  def all[A](promises: Iterable[Future[A]]): Future[Iterable[A]] =
-    Http.promise.all(promises)
-
-  /** Wraps a known value in a Promise. Useful in binding
-    *  some value to other promises in for-expressions. */
-  @deprecated("Use Http.promise.apply or other HttpExecutor")
-  def apply[T](existing: T): Future[T] =
-    Http.promise(existing)
-
 }
 
 object DispatchFuture {

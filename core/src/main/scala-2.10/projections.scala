@@ -1,6 +1,5 @@
 package dispatch
 
-import concurrent.Future
 import scala.util.Failure
 
 // handy projections
@@ -20,7 +19,7 @@ object PromiseEither {
         a match {
           case Left(x) => f.apply(x)
           case Right(x) =>
-            Future.failed[Either[X,BB]](
+            concurrent.Future.failed[Either[X,BB]](
               new NoSuchElementException("Future.failed not completed with a throwable.")
             )
         }
@@ -51,7 +50,7 @@ object PromiseEither {
     Future[Either[AA,Y]] =
       underlying.flatMap { a =>
         a match {
-          case Left(x) => Future.failed[Either[AA,Y]](
+          case Left(x) => concurrent.Future.failed[Either[AA,Y]](
             new NoSuchElementException("Future.failed not completed with a throwable.")
           )
           case Right(x) => f.apply(x)

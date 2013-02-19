@@ -8,7 +8,6 @@ import scala.util.control.Exception.{allCatch,catching}
 import scala.util.{Success, Failure, Try}
 import concurrent._
 import annotation.tailrec
-import concurrent.duration.Duration
 
 object Futures {
 
@@ -54,15 +53,6 @@ object Futures {
       }
   }
 
-  @deprecated("Use Http.promise.all or other HttpExecutor")
-  def all[A](promises: Iterable[Promise[A]]): Promise[Iterable[A]] =
-    Http.promise.all(promises)
-
-  /** Wraps a known value in a Promise. Useful in binding
-    *  some value to other promises in for-expressions. */
-  @deprecated("Use Http.promise.apply or other HttpExecutor")
-  def apply[T](existing: T): Promise[T] =
-    Http.promise(existing)
     */
 }
 

@@ -76,10 +76,13 @@ trait HttpExecutor { self =>
     apply(pair._1, pair._2)
 
   def apply[T](request: Request, handler: AsyncHandler[T]): Future[T] =
-  requestHandlerToFuture(request, handler, this)
+    toScalaFuture(
+      client.executeRequest(request, handler),
+      this
+    )
 
-
-  lazy val promise: dispatch.Futures.Factory = new dispatch.Futures.Factory(self)
+  lazy val promise: dispatch.Futures.Factory =
+    new dispatch.Futures.Factory(self)
 
   def shutdown() {
     client.close()
