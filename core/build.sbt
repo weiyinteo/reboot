@@ -7,9 +7,9 @@ libraryDependencies ++= Seq(
   "com.ning" % "async-http-client" % "1.7.16"
 )
 
-seq(lsSettings :_*)
+Seq(lsSettings :_*)
 
-seq(buildInfoSettings:_*)
+Seq(buildInfoSettings:_*)
 
 sourceGenerators in Compile <+= buildInfo
 
