@@ -25,7 +25,7 @@ private [dispatch] object InternalDefaults {
     )
   ).getOrElse(false)
 
-  private lazy val underlying = 
+  private lazy val underlying =
     if (inSbt) SbtProcessDefaults
     else BasicDefaults
 
@@ -42,7 +42,7 @@ private [dispatch] object InternalDefaults {
     lazy val timer = new HashedWheelTimer()
     def builder = new AsyncHttpClientConfig.Builder()
       .setUserAgent("Dispatch/%s" format BuildInfo.version)
-      .setRequestTimeoutInMs(-1) // don't timeout streaming connections
+      .setRequestTimeout(-1) // don't timeout streaming connections
   }
 
   /** Uses daemon threads and tries to exit cleanly when running in sbt  */
@@ -82,10 +82,8 @@ private [dispatch] object InternalDefaults {
         )
       }
 
-      val config = new NettyAsyncHttpProviderConfig().addProperty(
-        NettyAsyncHttpProviderConfig.SOCKET_CHANNEL_FACTORY,
-        nioClientSocketChannelFactory
-      )
+      val config = new NettyAsyncHttpProviderConfig()
+      config.setSocketChannelFactory(nioClientSocketChannelFactory)
       config.setNettyTimer(timer)
       BasicDefaults.builder.setAsyncHttpClientProviderConfig(config)
     }

@@ -1,5 +1,7 @@
 package dispatch.oauth
 
+import com.ning.http.client.Param
+import com.ning.http.client.uri.Uri
 import dispatch._
 
 import scala.concurrent.{Future,ExecutionContext}
@@ -59,12 +61,13 @@ trait Exchange {
     val calc = new OAuthSignatureCalculator(consumer, reqToken)
     val timestamp = System.currentTimeMillis() / 1000L
     val unsigned = url(authorize) <<? Map("oauth_token" -> reqToken.getKey)
+    val uri = Uri.create(unsigned.url)
     val sig = calc.calculateSignature("GET",
-                                      unsigned.url,
+                                      uri,
                                       timestamp,
                                       generateNonce,
-                                      new FluentStringsMap,
-                                      new FluentStringsMap)
+                                      new java.util.ArrayList[Param](),
+                                      new java.util.ArrayList[Param]())
     (unsigned <<? Map("oauth_signature" -> sig)).url
   }
 

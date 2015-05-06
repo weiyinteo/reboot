@@ -11,8 +11,7 @@ class SigningVerbs(val subject: Req) extends RequestVerbs {
     val calc = new OAuthSignatureCalculator(consumer, token)
     subject underlying { r =>
       val req = r.build
-      val baseurl = req.getUrl().takeWhile { _ != '?' }.mkString("")
-      calc.calculateAndAddSignature(baseurl, req, r)
+      calc.calculateAndAddSignature(req, r)
       r
     }
   }
